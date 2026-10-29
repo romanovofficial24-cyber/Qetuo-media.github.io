@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QETUO — Official</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Orbitron', sans-serif;
+            background-color: #0a0a0a;
+            color: #fff;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        @keyframes glitch {
+            0% { text-shadow: 0.05em 0 0 #ff00de, 0 0.05em 0 #00ffea; }
+            14% { text-shadow: 0.05em 0 0 #ff00de, 0 0.05em 0 #00ffea; }
+            15% { text-shadow: -0.05em 0 0 #00ffea, 0 -0.05em 0 #ff00de; }
+            29% { text-shadow: -0.05em 0 0 #00ffea, 0 -0.05em 0 #ff00de; }
+            30% { text-shadow: 0.05em 0.05em #ff00de, -0.05em -0.05em #00ffea; }
+            44% { text-shadow: 0.05em 0.05em #ff00de, -0.05em -0.05em #00ffea; }
+            45% { text-shadow: -0.05em 0.05em #00ffea, 0.05em -0.05em #ff00de; }
+            59% { text-shadow: -0.05em 0.05em #00ffea, 0.05em -0.05em #ff00de; }
+            60% { text-shadow: 0 0 0 #ff00de, 0 0 0 #00ffea; }
+            100% { text-shadow: 0 0 0 #ff00de, 0 0 0 #00ffea; }
+        }
+
+        .glitch {
+            position: relative;
+            animation: glitch 2s linear infinite;
+        }
+
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.7;
+        }
+
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px 10px;
+            background: 
+                linear-gradient(45deg, #1a1a1a 25%, #000000 25%, #000000 50%, #1a1a1a 50%, #1a1a1a 75%, #000000 75%, #000000 100%),
+                repeating-linear-gradient(-45deg, #111, #111 10px, #222 10px, #222 20px);
+            background-size: 40px 40px;
+        }
+
+        .hero-content h1 {
+            font-size: 4rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .hero-content p {
+            font-size: 1.3rem;
+            font-weight: 400;
+            color: #00ffea;
+            margin-bottom: 30px;
+            text-shadow: 0 0 10px rgba(0, 255, 234, 0.5);
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 15px 40px;
+            background: transparent;
+            color: #ff00de;
+            border: 2px solid #ff00de;
+            text-decoration: none;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 2px;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 0, 222, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            background: #ff00de;
+            color: #000;
+            box-shadow: 0 0 20px #ff00de, 0 0 40px #00ffea;
+            transform: scale(1.05) rotate(1deg);
+        }
+
+        .album-section {
+            padding: 50px 20px;
+            background: #000;
+            text-align: center;
+        }
+
+        .album-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .album-card {
+            background: #111;
+            border: 1px solid #333;
+            padding: 20px;
+            border-radius: 10px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+        }
+
+        .album-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(255, 0, 222, 0.2);
+        }
+
+        .album-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, transparent, rgba(0, 255, 234, 0.1));
+            pointer-events: none;
+        }
+
+        /* Стили для панели стриминга */
+        .streaming-panel {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .stream-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 12px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            min-width: 110px;
+        }
+
+        .stream-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .yandex { background: #f8d01d; color: #000; }
+        .vk { background: #4f759f; color: #fff; }
+        .apple { background: #000; color: #fff; }
+        .spotify { background: #1db954; color: #000; }
+
+        footer {
+            background: #000;
+            color: #555;
+            text-align: center;
+            padding: 30px 20px;
+            font-size: 0.9rem;
+            border-top: 1px solid #ff00de;
+        }
+
+        @media (max-width: 768px) {
+            .hero-content h1 { font-size: 2.5rem; }
+            .hero-content p { font-size: 1.1rem; }
+            .btn { width: 100%; padding: 15px 20px; max-width: 300px; }
+            .album-grid { grid-template-columns: 1fr; gap: 20px; }
+            .streaming-panel { gap: 8px; }
+            .stream-btn { padding: 6px 10px; font-size: 0.75rem; min-width: 90px; }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="bg-canvas"></canvas>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1 class="glitch">QETUO</h1>
+            <p>Уличная правда. Грязный звук. Нулевая фильтрация.</p>
+            <a href="#album" class="btn">Слушать альбом</a>
+            <a href="#projects" class="btn">Фото-проекты</a>
+        </div>
+    </section>
+
+    <section id="album" class="album-section">
+        <h2 style="font-size: 2.5rem; margin-bottom: 20px; color: #ff00de;">Последний альбом</h2>
+        <p style="color: #aaa; max-width: 600px; margin: 0 auto 40px;">Треки, записанные в заброшенных промзонах. Звук, который режет бетон.</p>
+        
+        <div class="album-grid">
+            <!-- Трек 1 -->
+            <div class="album-card">
+                <h3>Трек 1: "Асмолов 99"</h3>
+                <p style="color: #777; font-size: 0.9rem;">Одиночество на верхних этажах, когда внизу кипит жизнь, которой нет для тебя.</p>
+                <div class="streaming-panel">
+                    <a href="#" class="stream-btn yandex">▶ Яндекс Музыка</a>
+                    <a href="#" class="stream-btn vk">▶ VK Музыка</a>
+                    <a href="#" class="stream-btn apple">▶ Apple Music</a>
+                    <a href="#" class="stream-btn spotify">▶ Spotify</a>
+                </div>
+            </div>
+
+            <!-- Трек 2 -->
+            <div class="album-card">
+                <h3>Трек 2: "Неоновый Дождь"</h3>
+                <p style="color: #777; font-size: 0.9rem;">Биты, пробивающие лобовое стекло такси в час пик.</p>
+                <div class="streaming-panel">
+                    <a href="#" class="stream-btn yandex">▶ Яндекс Музыка</a>
+                    <a href="#" class="stream-btn vk">▶ VK Музыка</a>
+                    <a href="#" class="stream-btn apple">▶ Apple Music</a>
+                    <a href="#" class="stream-btn spotify">▶ Spotify</a>
+                </div>
+            </div>
+
+            <!-- Трек 3 -->
+            <div class="album-card">
+                <h3>Трек 3: "Спальный Район"</h3>
+                <p style="color: #777; font-size: 0.9rem;">Гимн панельных девятиэтажек и ржавых качелей.</p>
+                <div class="streaming-panel">
+                    <a href="#" class="stream-btn yandex">▶ Яндекс Музыка</a>
+                    <a href="#" class="stream-btn vk">▶ VK Музыка</a>
+                    <a href="#" class="stream-btn apple">▶ Apple Music</a>
+                    <a href="#" class="stream-btn spotify">▶ Spotify</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="projects" class="album-section" style="background: #0a0a0a;">
+        <h2 style="font-size: 2.5rem; margin-bottom: 20px; color: #00ffea;">Визуальные проекты</h2>
+        <p style="color: #aaa; max-width: 600px; margin: 0 auto 40px;">Эстетика VHS, 16мм пленки и жесткого контрового света.</p>
+        
+        <div class="album-grid">
+            <div class="album-card">
+                <h3>Проект "ГЕТТО: ОТКРЫТЫЙ ИСХОД"</h3>
+                <p style="color: #777; font-size: 0.9rem;">Серия снимков на просроченную пленку в районе Южный порт.</p>
+                <a href="#" class="btn" style="padding: 10px 20px; font-size: 0.8rem;">Смотреть</a>
+            </div>
+            <div class="album-card">
+                <h3>Проект "СВЕТОФОР"</h3>
+                <p style="color: #777; font-size: 0.9rem;">Короткометражный анимированный клип, сгенерированный нейросетью.</p>
+                <a href="#" class="btn" style="padding: 10px 20px; font-size: 0.8rem;">Play</a>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>© 2026 QETUO. All rights distort. | Booking: management@qetuo.ru</p>
+    </footer>
+
+    <script>
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let lines = [];
+        const lineCount = 15;
+
+        function createLines() {
+            for (let i = 0; i < lineCount; i++) {
+                lines.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    x2: Math.random() * canvas.width,
+                    y2: Math.random() * canvas.height,
+                    speed: Math.random() * 0.5 + 0.2,
+                    color: i
